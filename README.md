@@ -1,24 +1,21 @@
-# StyleNest Phase 2
+# StyleNest Phase 3
 
-Phase 2 extends the Phase 1 fashion boutique with customer shopping functionality.
+Phase 3 adds a database-ready demo customer journey without requiring a database.
 
 ## Included
-- Persistent browser cart using localStorage
-- Add to cart from product cards and product details
-- Quantity controls and remove-from-cart
-- Cart subtotal and shipping calculation
-- Search overlay and search results
-- Wishlist with persistent browser storage
-- Account/Wishlist page
-- Working category/product detail routes
-- Size selection on product pages
-- Responsive layouts
+- Customer registration and demo login
+- Local browser session persistence
+- Wishlist and cart retained from Phase 2
+- Checkout with shipping/contact details
+- Delivery selection
+- Demo payment selection (no real payment processing)
+- Order creation and order confirmation
+- My Orders page
+- Orders persisted in localStorage
+
+## Important demo limitation
+This phase intentionally has no database. Demo users and orders are stored in the browser's localStorage. Do not use real passwords or sensitive payment details. A later database migration should replace the persistence methods in `components/StoreProvider.js` with API/database services while leaving the UI flow largely unchanged.
 
 ## Run
 npm install
 npm run dev
-
-Open http://localhost:3000
-
-## Note
-This phase is intentionally frontend-only. Authentication, database persistence, real payment processing and order creation should be added in Phase 3.
