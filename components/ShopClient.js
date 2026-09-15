@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { categories, products, getCategory } from '../lib/products';
 import ProductCard from './ProductCard';
 
@@ -16,6 +16,29 @@ export default function ShopClient({ category }) {
   const cat = getCategory(category);
   const [priceRange, setPriceRange] = useState('all');
   const [sort, setSort] = useState('featured');
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef(null);
+
+  useEffect(() => {
+    const closeSort = event => {
+      if (sortRef.current && !sortRef.current.contains(event.target)) setSortOpen(false);
+    };
+    document.addEventListener('mousedown', closeSort);
+    document.addEventListener('touchstart', closeSort);
+    return () => {
+      document.removeEventListener('mousedown', closeSort);
+      document.removeEventListener('touchstart', closeSort);
+    };
+  }, []);
+
+  const sortOptions = [
+    { value: 'featured', label: 'Featured' },
+    { value: 'low', label: 'Price: Low to High' },
+    { value: 'high', label: 'Price: High to Low' },
+    { value: 'rating', label: 'Top Rated' },
+  ];
+
+  const selectedSortLabel = sortOptions.find(option => option.value === sort)?.label || 'Featured';
 
   const filteredProducts = useMemo(() => {
     const selectedRange = priceRanges.find(range => range.id === priceRange);
@@ -55,16 +78,39 @@ export default function ShopClient({ category }) {
             <h1>{cat.name}</h1>
             <p>Explore our curated selection of {cat.name.toLowerCase()}.</p>
           </div>
-          <select
-            aria-label="Sort products"
-            value={sort}
-            onChange={e => setSort(e.target.value)}
-          >
-            <option value="featured">Sort: Featured</option>
-            <option value="low">Price: Low to High</option>
-            <option value="high">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-          </select>
+          <div className={`sort-control${sortOpen ? ' is-open' : ''}`} ref={sortRef}>
+            <button
+              type="button"
+              className="sort-trigger"
+              aria-label="Sort products"
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
+              onClick={() => setSortOpen(open => !open)}
+            >
+              <span>Sort: {selectedSortLabel}</span>
+              <span className="sort-chevron" aria-hidden="true">⌄</span>
+            </button>
+            {sortOpen && (
+              <div className="sort-menu" role="listbox" aria-label="Sort products">
+                {sortOptions.map(option => (
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={sort === option.value}
+                    className={sort === option.value ? 'sort-option active' : 'sort-option'}
+                    key={option.value}
+                    onClick={() => {
+                      setSort(option.value);
+                      setSortOpen(false);
+                    }}
+                  >
+                    <span>{option.label}</span>
+                    {sort === option.value && <span className="sort-check" aria-hidden="true">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="shop-layout">
